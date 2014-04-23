@@ -1,64 +1,99 @@
 import math
-class Vec3D:
-	TOL = .001
+
+class Vec2D:
+	DISTANCE_TOLERANCE = .001
 	
-	def __init__(self, x, y, z):
-		self.x = self.y = self.z = 0
+	def __init__(self, x=0, y=0):
+		self.x = self.y = 0
 		if(x):
 			self.x = x
 		if(y):
 			self.y = y
-		if(z):
-			self.z = z
-		
-		
+			
 	def __add__(self, rhs):
-		return Vec3D(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+		return Vec2D(self.x + rhs.x, self.y + rhs.y)
 	
-	
-	def __iadd__(self, rhs):
-		self.x += rhs
-		self.y +=rhs
-		self.z +=rhs
-			
-	def __isub__(self, rhs):
-		self.x -= rhs
-		self.y -=rhs
-		self.z -=rhs
-			
-	def __imul__(self, rhs):
-		self.x *= rhs
-		self.y *=rhs
-		self.z *=rhs
-			
-	def __idiv__(self, rhs):
-		self.x /= rhs
-		self.y /=rhs
-		self.z /=rhs
-			
 	def __sub__(self, rhs):
-		return Vec3D(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+		return Vec2D(self.x - rhs.x, self.y - rhs.y)
 	
 	def __div__(self, scalar):
-		return Vec3D(self.x / scalar, self.y / scalar, self.z / scalar)
+		return Vec2D(self.x / scalar, self.y / scalar)
 	
 	def __mul__(self, scalar):
-		return Vec3D(self.x * scalar, self.y * scalar, self.z * scalar)
+		return Vec2D(self.x * scalar, self.y * scalar)
+	
+	def __iadd__(self, rhs):
+		self.x += rhs.x
+		self.y +=rhs.y
+		return self
+		
+	def __isub__(self, rhs):
+		self.x -= rhs.x
+		self.y -=rhs.y
+		return self
+		
+	def __imul__(self, scalar):
+		self.x *= scalar
+		self.y *=scalar
+		return self
+			
+	def __idiv__(self, scalar):
+		self.x /= scalar
+		self.y /=scalar
+		return self
 	
 	def dot(self, rhs):
-		return self.x*rhs.x+self.y*rhs.y+self.z*rhs.z
+		return self.x*rhs.x+self.y*rhs.y
 	
-	def len(self):
-		return math.sqrt(self.x*self.x + self.y*self.y, self.z*self.z)
+	def magnitude(self):
+		return math.sqrt(self.x*self.x + self.y*self.y)
 	
-	def lenSqrd(self):
-		return (self.x*self.x+self.y*self.y+self.z*self.z)
+	def magnitudeSquared(self):
+		return (self.x*self.x+self.y*self.y)
 	
-	def getRotatedAboutZ(self, angle):
+	def distance(self, other):
+		dx = (self.x - other.x)
+		dy = (self.y - other.y)
+		return math.sqrt(dx*dx + dy*dy)
+	
+	def getNormalized(self):
+		mag = math.sqrt(self.x*self.x + self.y*self.y)
+		return Vec2D(self.x / mag, self.y / mag)
+	
+	def getRotated(self, angle):
 		cs = math.cos(angle)
 		sn = math.sin(angle)
-		return Vec3D(self.x*cs - self.y*sn, self.x*sn + self.y*cs, self.z)
+		return Vec2D(self.x*cs - self.y*sn, self.x*sn + self.y*cs)
 	
+	def getLeftPerpendicular(self):
+		return Vec2D(-self.y, self.x)
+		
+	def getRightPerpendicular(self):
+		return Vec2D(self.y, -self.x)
+	
+	def __neg__(self):
+		return Vec2D(-self.x, -self.y)
+	
+	def __eq__(self, other):
+		return self.distance(other) < Vec2D.DISTANCE_TOLERANCE
+	
+	
+	def __getitem__(self, key):
+		if key == 0:
+			return self.x
+		elif key == 1:
+			return self.y
+		else:
+			raise IndexError("Invalid subscript "+str(key)+" to Vec2d")
+	def __setitem__(self, key, value):
+		if key == 0:
+			self.x = value
+		elif key == 1:
+			self.y = value
+		else:
+			raise IndexError("Invalid subscript "+str(key)+" to Vec2d")
+	def __repr__(self):
+		return 'Vec2d(%s, %s)' % (self.x, self.y)
 	
 		
 	
