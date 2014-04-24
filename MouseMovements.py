@@ -4,32 +4,28 @@ root = Tk()
 oldx = 0
 oldy = 0
 
-def key(event):
-    s = "pressed " + repr(event.char)
-    root.title(s)
-
-def callback(event):
-    # frame.focus_set()
-    canvas.focus_set()
+def click(event):
     s = "clicked at " + str(event.x) + " " + str(event.y)
+    if event.x > line_end - radius:
+        event.x = line_end - radius
+    if event.x < line_start + radius:
+        event.x = line_start + radius
+    if event.y > line_end - radius:
+        event.y = line_end - radius
+    if event.y < line_start + radius:
+        event.y = line_start + radius
+        
     move(event.x, event.y)
     root.title(s)
     
 def showxy(event):
     xm, ym = event.x, event.y
     str1 = "mouse at x=%d  y=%d" % (xm, ym)
-    # show cordinates in title
     root.title(str1)
-    #move(xm, ym)
-    # switch color to red if mouse enters a set location range
-#     x,y, delta = 100, 100, 10
-#     frame.config(bg='red'
-#                  if abs(xm - x) < delta and abs(ym - y) < delta
-#                  else 'yellow')
 
 def drag(event):
     showxy(event)
-    callback(event)
+    click(event)
 
 def move(x, y):
     global oldx, oldy
@@ -39,23 +35,21 @@ def move(x, y):
     oldx = x
     oldy = y
 
-canvas = Canvas(root, width=450, height=450, bg='gray')
-canvas.pack(fill='both', expand=True)
-cir = canvas.create_oval(-25, -25, 25, 25, outline='white', fill='red')
-top = canvas.create_line(10, 10, 400, 10, fill='blue')
-bot = canvas.create_line(10, 400, 400, 400, fill='blue')
-left = canvas.create_line(10, 10, 10, 400, fill='blue')
-right = canvas.create_line(400, 10, 400, 400, fill='blue')
-canvas.bind("<Key>", key)
-canvas.bind("<Button-1>", callback)
+canvas = Canvas(root, width=450, height=450, bg='black')
+canvas.pack()
+radius = 15
+center = [-radius, -radius, radius, radius]
+line_start = 50
+line_end = 400
+cir = canvas.create_oval(center, outline='white', fill='red')
+top = canvas.create_line(line_start, line_start, line_end, line_start, fill='blue')
+bot = canvas.create_line(line_start, line_end, line_end, line_end, fill='blue')
+left = canvas.create_line(line_start, line_start, line_start, line_end, fill='blue')
+right = canvas.create_line(line_end, line_start, line_end, line_end, fill='blue')
+goal_top = canvas.create_rectangle((line_end + line_start) // 3, line_start, 2 * (line_end + line_start) // 3, line_start + 10, fill='yellow')
+goal_bot = canvas.create_rectangle((line_end + line_start) // 3, line_end, 2 * (line_end + line_start) // 3, line_end - 10, fill='yellow')
+canvas.bind("<Button-1>", click)
 canvas.bind("<Motion>", showxy)
 canvas.bind("<B1-Motion>", drag)
 
-
-# frame = Frame(root, width=300, height=300, bg="white")
-# frame.bind("<Key>", key)
-# frame.bind("<Button-1>", callback)
-# frame.bind("<Motion>", showxy)
-# frame.pack()
- 
 root.mainloop()
