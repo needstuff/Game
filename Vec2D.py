@@ -34,7 +34,7 @@ class Vec2D:
 		
 	def __imul__(self, scalar):
 		self.x *= scalar
-		self.y *=scalar
+		self.y *= scalar
 		return self
 			
 	def __idiv__(self, scalar):
@@ -58,7 +58,9 @@ class Vec2D:
 	
 	def getNormalized(self):
 		mag = math.sqrt(self.x*self.x + self.y*self.y)
-		return Vec2D(self.x / mag, self.y / mag)
+		if mag:
+			return Vec2D(self.x / mag, self.y / mag)
+		return Vec2D()
 	
 	def getRotated(self, angle):
 		cs = math.cos(angle)
@@ -94,6 +96,11 @@ class Vec2D:
 			raise IndexError("Invalid subscript "+str(key)+" to Vec2d")
 	def __repr__(self):
 		return 'Vec2d(%s, %s)' % (self.x, self.y)
+	
+	def getReflection(self, other):
+		unitN = other.getNormalized()
+		c = unitN * self.dot(unitN)
+		return (c*2) - self
 	
 		
 	

@@ -49,4 +49,19 @@ class TestVec2D(unittest.TestCase):
 		assert(v1.dot(Vec2D(-3,3)) == 0)
 		assert(v1.dot(Vec2D(0,1)) == 3)
 		assert(-v1 == Vec2D(-3,-3))
+		v1 = Vec2D(1,1)
+		v2 = -v1
+		v1*= -1
+		assert(v1 == v2)
+		
+	def test_reflect(self):
+		v1 = Vec2D(3,3)
+		n = Vec2D(0,1)
+		v2= v1.getReflection(n)
+		assert(v2 == Vec2D(-3,3))
+		
+		v1 = Vec2D(0,1)
+		n = Vec2D(1,1)
+		v2 = v1.getReflection(n)
+		assert(v2 == Vec2D(1,0))
 		
