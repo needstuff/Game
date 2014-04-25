@@ -1,16 +1,17 @@
 
 class CollisionTests():
     
-    def testCollisionSAT(self, e1, e2):
-        normals = e1.worldNormals + e2.worldNormals
+    def testCollisionSAT(self, e1, e2): #Seperating Axis Theorem Test
+        normals = e1.worldNormals + e2.worldNormals #normals are unit vectors perpendicular to shape edges
         minOverlap = 999999999
         minOverlapAxis = None
         
         bounds1 = e1.worldVertices
         bounds2 = e2.worldVertices
         
+        
         for norm in normals:
-            e1Max = e1Min = bounds1[0].dot(norm)
+            e1Max = e1Min = bounds1[0].dot(norm) #dot product is position along the normal 
             e2Max = e2Min = bounds2[1].dot(norm)
             
             for b in bounds1:
@@ -22,7 +23,7 @@ class CollisionTests():
         
             overlap = min(e1Max - e2Min, e2Max - e1Min)
                    
-            if(overlap < 0):
+            if(overlap < 0): #Exit if there is an axis with space between shapes
                 return None
             
             needFlip = overlap == e1Max - e2Min
@@ -33,4 +34,3 @@ class CollisionTests():
                     minOverlapAxis = -norm
                 
         return minOverlapAxis * minOverlap
-        
