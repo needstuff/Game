@@ -56,33 +56,23 @@ while True:
         
     mtv1 = cd.testCollisionSAT(cir, t)
     if(mtv1):
-        cir.pos += mtv1
-        if(cir.velocity == Vec2D(-230, -150)):  # if velocity is going to top left (-,-)
-            cir.velocity = Vec2D(-230, 150)  # make it go bot left (-,+)
-        elif(cir.velocity == Vec2D(230, -150)):  # if velocity is going to top right(+,-)
-            cir.velocity = Vec2D(230, 150)  # make it go bot right (+,+)
+        cir.pos += mtv1        
+        cir.velocity = cir.velocity.getReflection(Vec2D(0,1))
+
     mtv2 = cd.testCollisionSAT(cir, b)
     if(mtv2):
         cir.pos += mtv2
-        if(cir.velocity == Vec2D(230, 150)):
-            cir.velocity = Vec2D(230, -150)
-        elif(cir.velocity == Vec2D(-230, 150)):
-            cir.velocity = Vec2D(-230, -150)
+        cir.velocity = -cir.velocity.getReflection(Vec2D(0,-1))
+
     mtv3 = cd.testCollisionSAT(cir, l)
     if(mtv3):
         cir.pos += mtv3
-        if(cir.velocity == Vec2D(-230, -150)):
-            cir.velocity = Vec2D(230, -150)
-        elif(cir.velocity == Vec2D(-230, 150)):
-            cir.velocity = Vec2D(230, 150)
+        cir.velocity = -cir.velocity.getReflection(Vec2D(1,0))
+
     mtv4 = cd.testCollisionSAT(cir, r)
     if(mtv4):
-        mtv4 *= 2
         cir.pos += mtv4
-        if(cir.velocity == Vec2D(230, -150)):
-            cir.velocity = Vec2D(-230, -150)
-        elif(cir.velocity == Vec2D(230, 150)):
-            cir.velocity = Vec2D(-230, 150)
+        cir.velocity = -cir.velocity.getReflection(Vec2D(-1,0))
         
     mtv5 = cd.testCollisionSAT(rect, t)
     if(mtv5):
@@ -112,8 +102,8 @@ while True:
             rect.velocity = Vec2D(-200, -200)
         else:
             rect.velocity = Vec2D(-200, 200)
-                     
-             
+    
+    
     
     renderer.renderAll()
     
