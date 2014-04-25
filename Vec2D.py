@@ -97,4 +97,3 @@ class Vec2D:
 	
 		
 	
-	
