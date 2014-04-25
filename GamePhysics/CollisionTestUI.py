@@ -4,18 +4,18 @@ from BaseGameEntity import *
 from Renderer import *
 from GamePhysics import CollisionDetection
 
-width = height = 800
+width = height = 500
 root = Tk()
 cd = CollisionDetection.CollisionTests()
-can = Canvas(root, bg="white", width=800, height=800)
+can = Canvas(root, bg="white", width=width, height=height)
 renderer = Renderer(can)
 sidewidth = 5
 vert_vertices = [Vec2D(-sidewidth,-height/2), Vec2D(-sidewidth,height/2), Vec2D(sidewidth,height/2), Vec2D(sidewidth,-height/2)]
 hori_vertices = [Vec2D(-width/2 + 2*sidewidth, -5), Vec2D(-width/2+2*sidewidth, 5), Vec2D(width/2-2*sidewidth, 5), Vec2D(width/2-2*sidewidth, -5)]
 tri_vertices = [Vec2D(-10,10), Vec2D(10,10), Vec2D(0,-10)]
 rect_vertices = [Vec2D(-10,-10), Vec2D(-10,10), Vec2D(10,10), Vec2D(10,-10)]
-tri = BaseGameEntity(tri_vertices,pos=Vec2D(100,100),velocity=Vec2D(60,60), angularVelocity=-1)
-rect = BaseGameEntity(rect_vertices, pos=Vec2D(400,400), velocity=Vec2D(-60,-60), angularVelocity=1)
+tri = BaseGameEntity(tri_vertices,pos=Vec2D(100,100),velocity=Vec2D(80,80), angularVelocity=-1)
+rect = BaseGameEntity(rect_vertices, pos=Vec2D(400,400), velocity=Vec2D(-80,-80), angularVelocity=1)
 leftwall = BaseGameEntity(vert_vertices, pos=Vec2D(5,height/2), mass=9999999999)
 rightwall = BaseGameEntity(vert_vertices, pos=Vec2D(width-5,height/2), mass=9999999999)
 topwall = BaseGameEntity(hori_vertices, pos =Vec2D(width/2, 5), mass=9999999999)
@@ -25,9 +25,9 @@ for e in entities:
     renderer.addEntity(e)
 can.pack()
 
+
+deltaTime = .025
 while True:
-    print(rect.velocity)
-    deltaTime = .025
     time.sleep(deltaTime)
     for e in entities:
         e.update(deltaTime)
@@ -41,8 +41,9 @@ while True:
                     mtv*=2 
                     e1.pos+=mtv / e1.mass
                     e2.pos-=mtv / e2.mass
-                    e1.velocity *= -1 
-                    e2.velocity *= -1 
+                    nv = mtv.getNormalized()
+                    e1.velocity = nv * e1.velocity.magnitude()
+                    e2.velocity = -nv * e2.velocity.magnitude()
     
     renderer.renderAll()
     
