@@ -1,41 +1,7 @@
-from Tkinter import *
+from Tkinter import Tk, Canvas
 from Ball import Ball
 from Paddle1 import Paddle1
 from Paddle2 import Paddle2
-
-def click(event):
-    s = "clicked at " + str(event.x) + " " + str(event.y)
-    event.x -= cir.start #since the ball starts at mid, need to adjust x,y
-    event.y -= cir.start
-    if event.x > line_end - cir.radius - cir.start:
-        event.x = line_end - cir.radius - cir.start
-    if event.x < line_start + cir.radius - cir.start:
-        event.x = line_start + cir.radius - cir.start
-    if event.y > line_end - cir.radius - cir.start:
-        event.y = line_end - cir.radius - cir.start
-    if event.y < line_start + cir.radius - cir.start:
-        event.y = line_start + cir.radius - cir.start
-        
-    move(event.x, event.y)
-    root.title(s)
-    
-def showxy(event):
-    xm, ym = event.x, event.y
-    str1 = "mouse at x=%d  y=%d" % (xm, ym)
-    root.title(str1)
-
-def drag(event):
-    showxy(event)
-    click(event)
-
-def move(x, y):
-    global oldx, oldy
-    dx = x - oldx         
-    dy = y - oldy
-    # canvas.move(cir, dx, dy)
-    cir.move(dx, dy)
-    oldx = x
-    oldy = y
     
 def table():
     _top = canvas.create_line(line_start, line_start, line_end, line_start, fill='white')
@@ -55,13 +21,11 @@ line_end = 400
 canvas = Canvas(root, width=bounds, height=bounds, bg='black')
 canvas.pack()
 table()
-
+root.title("Air Hockey")
 cir = Ball(canvas)
+
 pad1 = Paddle1(canvas, bounds, line_start, line_end)
 pad2 = Paddle2(canvas, bounds, line_start, line_end)
-# canvas.bind("<Button-1>", click)
-# canvas.bind("<Motion>", showxy)
-canvas.bind("<B1-Motion>", drag)
 
 root.bind("<Left>", pad1.left)
 root.bind("<Right>", pad1.right)
@@ -72,6 +36,6 @@ root.bind("<a>", pad2.left)
 root.bind("<d>", pad2.right)
 root.bind("<w>", pad2.up)
 root.bind("<s>", pad2.down)
-
+cir.move(line_start, line_end, pad1, pad2)
 
 root.mainloop()
