@@ -15,28 +15,26 @@ circle = [Vec2D(10 * sqrt(3) / 2, 10 * .5), Vec2D(10 * sqrt(2) / 2, 10 * sqrt(2)
                  Vec2D(10 * -sqrt(3) / 2, 10 * -.5), Vec2D(10 * -sqrt(2) / 2, 10 * -sqrt(2) / 2), Vec2D(10 * -.5, 10 * -sqrt(3) / 2), Vec2D(0, -10),
                   Vec2D(10 * .5, 10 * -sqrt(3) / 2), Vec2D(10 * sqrt(2) / 2, 10 * -sqrt(2) / 2), Vec2D(10 * sqrt(3) / 2, 10 * -.5), Vec2D(10, 0)]
 rect_vertices = [Vec2D(-10, -10), Vec2D(-10, 10), Vec2D(10, 10), Vec2D(10, -10)]
-cir = BaseGameEntity(circle, pos=Vec2D(100, 100), velocity=Vec2D(230, 150), angularVelocity=1.75)
-rect = BaseGameEntity(rect_vertices, pos=Vec2D(500, 500), velocity=Vec2D(-200, -200), angularVelocity=1.75)
+cir = BaseGameEntity(circle, pos=Vec2D(100, 100), velocity=Vec2D(230, 150), angularVelocity=1)
+rect = BaseGameEntity(rect_vertices, pos=Vec2D(500, 500), velocity=Vec2D(-200, -200), angularVelocity=1)
 
 renderer.addEntity(cir)
 renderer.addEntity(rect)
 
-top = [Vec2D(-5, -5), Vec2D(-5, 5), Vec2D(495, 5), Vec2D(495, -5)]
-bot = [Vec2D(-5, -5), Vec2D(-5, 5), Vec2D(495, 5), Vec2D(495, -5)]
-left = [Vec2D(-5, -5), Vec2D(-5, 495), Vec2D(5, 495), Vec2D(5, -5)]
-right = [Vec2D(-5, -5), Vec2D(-5, 505), Vec2D(5, 505), Vec2D(5, -5)]
+horizontal = [Vec2D(-5, -5), Vec2D(-5, 5), Vec2D(495, 5), Vec2D(495, -5)]
+vertical = [Vec2D(-5, -5), Vec2D(-5, 505), Vec2D(5, 505), Vec2D(5, -5)]
 
-t = BaseGameEntity(top, pos=Vec2D(50, 50))
-b = BaseGameEntity(bot, pos=Vec2D(50, 550))
-l = BaseGameEntity(left, pos=Vec2D(50, 50))
-r = BaseGameEntity(right, pos=Vec2D(550, 50))
+top = BaseGameEntity(horizontal, pos=Vec2D(50, 50))
+bot = BaseGameEntity(horizontal, pos=Vec2D(50, 550))
+left = BaseGameEntity(vertical, pos=Vec2D(50, 50))
+right = BaseGameEntity(vertical, pos=Vec2D(550, 50))
 
-renderer.addEntity(t)
-renderer.addEntity(b)
-renderer.addEntity(l)
-renderer.addEntity(r)
+renderer.addEntity(top)
+renderer.addEntity(bot)
+renderer.addEntity(left)
+renderer.addEntity(right)
 
-entities = [rect, cir, t, b, l, r]
+entities = [rect, cir, top, bot, left, right]
 can.pack()
 
 
@@ -48,60 +46,55 @@ while True:
   
     mtv = cd.testCollisionSAT(cir, rect)
     if(mtv):
-        mtv *= 2
         cir.pos += mtv
         rect.pos += -mtv
         cir.velocity *= -1
         rect.velocity *= -1
         
-    mtv1 = cd.testCollisionSAT(cir, t)
+    mtv1 = cd.testCollisionSAT(cir, top)
     if(mtv1):
-        cir.pos += mtv1        
-        cir.velocity = cir.velocity.getReflection(Vec2D(0,1))
+        cir.pos += mtv1
+        if cir.velocity == Vec2D(-230, -150) or cir.velocity == Vec2D(230, -150): 
+            cir.velocity = -cir.velocity.getReflection(Vec2D(0, 1))
 
-    mtv2 = cd.testCollisionSAT(cir, b)
+    mtv2 = cd.testCollisionSAT(cir, bot)
     if(mtv2):
         cir.pos += mtv2
-        cir.velocity = -cir.velocity.getReflection(Vec2D(0,-1))
+        if cir.velocity == Vec2D(230, 150) or cir.velocity == Vec2D(-230, 150):
+            cir.velocity = -cir.velocity.getReflection(Vec2D(0, -1))
 
-    mtv3 = cd.testCollisionSAT(cir, l)
+    mtv3 = cd.testCollisionSAT(cir, left)
     if(mtv3):
         cir.pos += mtv3
-        cir.velocity = -cir.velocity.getReflection(Vec2D(1,0))
+        if cir.velocity == Vec2D(-230, 150) or cir.velocity == Vec2D(-230, -150):
+            cir.velocity = -cir.velocity.getReflection(Vec2D(1, 0))
 
-    mtv4 = cd.testCollisionSAT(cir, r)
+    mtv4 = cd.testCollisionSAT(cir, right)
     if(mtv4):
         cir.pos += mtv4
-        cir.velocity = -cir.velocity.getReflection(Vec2D(-1,0))
+        if cir.velocity == Vec2D(230, 150) or cir.velocity == Vec2D(230, -150):
+            cir.velocity = -cir.velocity.getReflection(Vec2D(-1, 0))    
         
-    mtv5 = cd.testCollisionSAT(rect, t)
+    mtv5 = cd.testCollisionSAT(rect, top)
     if(mtv5):
         rect.pos += mtv5
-        if(rect.velocity == Vec2D(-200, -200)):
-            rect.velocity = Vec2D(-200, 200)
-        else:
-            rect.velocity = Vec2D(200, 200)
-    mtv6 = cd.testCollisionSAT(rect, b)
+        if rect.velocity == Vec2D(-200, -200) or rect.velocity == Vec2D(200, -200): 
+            rect.velocity = -rect.velocity.getReflection(Vec2D(0, 1))
+    mtv6 = cd.testCollisionSAT(rect, bot)
     if(mtv6):
         rect.pos += mtv6
-        if(rect.velocity == Vec2D(200, 200)):
-            rect.velocity = Vec2D(200, -200)
-        else:
-            rect.velocity = Vec2D(-200, -200)
-    mtv7 = cd.testCollisionSAT(rect, l)
+        if rect.velocity == Vec2D(200, 200) or rect.velocity == Vec2D(-200, 200): 
+            rect.velocity = -rect.velocity.getReflection(Vec2D(0, -1))
+    mtv7 = cd.testCollisionSAT(rect, left)
     if(mtv7):
         rect.pos += mtv7
-        if(rect.velocity == Vec2D(-200, -200)):
-            rect.velocity = Vec2D(200, -200)
-        else:
-            rect.velocity = Vec2D(200, 200)
-    mtv8 = cd.testCollisionSAT(rect, r)
+        if rect.velocity == Vec2D(-200, 200) or rect.velocity == Vec2D(-200, -200): 
+            rect.velocity = -rect.velocity.getReflection(Vec2D(1, 0))
+    mtv8 = cd.testCollisionSAT(rect, right)
     if(mtv8):
         rect.pos += mtv8
-        if(rect.velocity == Vec2D(200, -200)):
-            rect.velocity = Vec2D(-200, -200)
-        else:
-            rect.velocity = Vec2D(-200, 200)
+        if rect.velocity == Vec2D(200, 200) or rect.velocity == Vec2D(200, -200): 
+            rect.velocity = -rect.velocity.getReflection(Vec2D(-1, 0))
     
     
     
