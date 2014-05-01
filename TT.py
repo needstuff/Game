@@ -20,10 +20,10 @@ circle = [Vec2D(10 * sqrt(3) / 2, 10 * .5), Vec2D(10 * sqrt(2) / 2, 10 * sqrt(2)
                  Vec2D(10 * -sqrt(3) / 2, 10 * -.5), Vec2D(10 * -sqrt(2) / 2, 10 * -sqrt(2) / 2), Vec2D(10 * -.5, 10 * -sqrt(3) / 2), Vec2D(0, -10),
                   Vec2D(10 * .5, 10 * -sqrt(3) / 2), Vec2D(10 * sqrt(2) / 2, 10 * -sqrt(2) / 2), Vec2D(10 * sqrt(3) / 2, 10 * -.5), Vec2D(10, 0)]
 rect_vertices = [Vec2D(-10, -10), Vec2D(-10, 10), Vec2D(10, 10), Vec2D(10, -10)]
-cir = BaseGameEntity(circle, pos=Vec2D(150, 100), velocity=Vec2D(230, 150), angularVelocity=3)
+cir = BaseGameEntity(circle, pos=Vec2D(150, 100), velocity=Vec2D(150, 850), angularVelocity=3)
 rect = BaseGameEntity(rect_vertices, pos=Vec2D(300, 100), velocity=Vec2D(-200, -200), angularVelocity=3)
 
-pad_v = [Vec2D(-30, -10), Vec2D(-30, 10), Vec2D(30,10), Vec2D(30,-10)]
+pad_v = [Vec2D(-30, -10), Vec2D(-30, 10), Vec2D(30, 10), Vec2D(30, -10)]
 pad = BaseGameEntity(pad_v, pos=Vec2D(300, 500))
 renderer.addEntity(cir)
 renderer.addEntity(rect)
@@ -48,18 +48,22 @@ can.pack()
 
 root.bind("<B1-Motion>", drag)
 
+horizontal_reflection = Vec2D(1, 0)
+vertical_reflection = Vec2D(0, 1)
+friction = .999
 
 while True:
-    deltaTime = .025
+    deltaTime = .0025
     time.sleep(deltaTime)
     for e in entities:
         e.update(deltaTime)
         
+    cir.velocity *= friction
+    
     m = cd.testCollisionSAT(cir, pad)
     if m:
-        cir.pos += m
-        if cir.velocity == Vec2D(230, 150) or cir.velocity == Vec2D(-230, 150):
-            cir.velocity = -cir.velocity.getReflection(Vec2D(0, -1))
+        cir.pos += m * 5
+        cir.velocity = -cir.velocity.getReflection(vertical_reflection) * 1.1
   
     mtv = cd.testCollisionSAT(cir, rect)
     if(mtv):
@@ -70,28 +74,26 @@ while True:
         
     mtv1 = cd.testCollisionSAT(cir, top)
     if(mtv1):
-        cir.pos += mtv1
-        if cir.velocity == Vec2D(-230, -150) or cir.velocity == Vec2D(230, -150): 
-            cir.velocity = -cir.velocity.getReflection(Vec2D(0, 1))
+        cir.pos += mtv1 * 5
+        cir.velocity = -cir.velocity.getReflection(vertical_reflection)
 
     mtv2 = cd.testCollisionSAT(cir, bot)
     if(mtv2):
-        cir.pos += mtv2
-        if cir.velocity == Vec2D(230, 150) or cir.velocity == Vec2D(-230, 150):
-            cir.velocity = -cir.velocity.getReflection(Vec2D(0, -1))
+        cir.pos += mtv2 * 5
+        cir.velocity = -cir.velocity.getReflection(vertical_reflection)
 
     mtv3 = cd.testCollisionSAT(cir, left)
     if(mtv3):
-        cir.pos += mtv3
-        if cir.velocity == Vec2D(-230, 150) or cir.velocity == Vec2D(-230, -150):
-            cir.velocity = -cir.velocity.getReflection(Vec2D(1, 0))
+        cir.pos += mtv3 * 5
+        cir.velocity = -cir.velocity.getReflection(horizontal_reflection)
 
     mtv4 = cd.testCollisionSAT(cir, right)
     if(mtv4):
-        cir.pos += mtv4
-        if cir.velocity == Vec2D(230, 150) or cir.velocity == Vec2D(230, -150):
-            cir.velocity = -cir.velocity.getReflection(Vec2D(-1, 0))    
-        
+        cir.pos += mtv4 * 5
+        cir.velocity = -cir.velocity.getReflection(horizontal_reflection)
+
+    '''no changes below'''
+
     mtv5 = cd.testCollisionSAT(rect, top)
     if(mtv5):
         rect.pos += mtv5
