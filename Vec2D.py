@@ -13,9 +13,11 @@ class Vec2D:
 	def __add__(self, rhs):
 		return Vec2D(self.x + rhs.x, self.y + rhs.y)
 	
+	#subract vectors, if vector is a offset from world origin, or position, then pos1 - pos2 can be thought of as vector from pos2 to pos1
 	def __sub__(self, rhs):
 		return Vec2D(self.x - rhs.x, self.y - rhs.y)
 	
+	#divide/multiply changes length of vector but not direction
 	def __div__(self, scalar):
 		return Vec2D(self.x / scalar, self.y / scalar)
 	
@@ -42,34 +44,44 @@ class Vec2D:
 		self.y /=scalar
 		return self
 	
+	#dot product (scalar product). If a vector is unit vector, then dot product is magnitude of projections onto that vector. if < 0 then vectors face away from each other, if 0 perpendicular
+	#if both are unit vectors, then dot product is cosine of angle between them  
 	def dot(self, rhs):
 		return self.x*rhs.x+self.y*rhs.y
 	
 	def magnitude(self):
 		return math.sqrt(self.x*self.x + self.y*self.y)
 	
+	
+	#square root is computationally more expensive than simple artihmetic, so when comparing lengths, it is more effiecient to compare square of magnitured
 	def magnitudeSquared(self):
 		return (self.x*self.x+self.y*self.y)
 	
+	
+	#distance from head of 1 vector to another, same as (v1 - v2).magnitude()
 	def distance(self, other):
 		dx = (self.x - other.x)
 		dy = (self.y - other.y)
 		return math.sqrt(dx*dx + dy*dy)
 	
+	#Divide vector by it's length to get a unit vector of length = 1
 	def getNormalized(self):
 		mag = math.sqrt(self.x*self.x + self.y*self.y)
 		if mag:
 			return Vec2D(self.x / mag, self.y / mag)
 		return Vec2D()
 	
+	#rotate by radians
 	def getRotated(self, angle):
 		cs = math.cos(angle)
 		sn = math.sin(angle)
 		return Vec2D(self.x*cs - self.y*sn, self.x*sn + self.y*cs)
 	
+	#rotate 90 degrees left
 	def getLeftPerpendicular(self):
 		return Vec2D(-self.y, self.x)
-		
+	
+	
 	def getRightPerpendicular(self):
 		return Vec2D(self.y, -self.x)
 	
