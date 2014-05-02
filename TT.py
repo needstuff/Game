@@ -5,10 +5,30 @@ from BaseGameEntity import *
 from Renderer import *
 from GamePhysics import CollisionDetection
 
-def drag(event):
-    pad.pos = Vec2D(event.x, event.y)
+def click(event):
+    global oldX, oldY
+    x = event.x
+    y = event.y
 
 
+    if pad.pos[0] < x:
+        x = x + pad.pos[0]
+    else:
+        x = -(pad.pos[0] - x)
+    if pad.pos[1] < y:
+        y = y + pad.pos[1]
+    else:
+        y = y - pad.pos[1]
+        
+    
+    pad.velocity = Vec2D(x, y)
+    
+    oldX = x
+    oldY = y
+    
+
+oldX = 0
+oldY = 0
 
 root = Tk()
 cd = CollisionDetection.CollisionTests()
@@ -20,11 +40,11 @@ circle = [Vec2D(10 * sqrt(3) / 2, 10 * .5), Vec2D(10 * sqrt(2) / 2, 10 * sqrt(2)
                  Vec2D(10 * -sqrt(3) / 2, 10 * -.5), Vec2D(10 * -sqrt(2) / 2, 10 * -sqrt(2) / 2), Vec2D(10 * -.5, 10 * -sqrt(3) / 2), Vec2D(0, -10),
                   Vec2D(10 * .5, 10 * -sqrt(3) / 2), Vec2D(10 * sqrt(2) / 2, 10 * -sqrt(2) / 2), Vec2D(10 * sqrt(3) / 2, 10 * -.5), Vec2D(10, 0)]
 rect_vertices = [Vec2D(-10, -10), Vec2D(-10, 10), Vec2D(10, 10), Vec2D(10, -10)]
-cir = BaseGameEntity(circle, pos=Vec2D(150, 100), velocity=Vec2D(150, 850), angularVelocity=3)
-rect = BaseGameEntity(rect_vertices, pos=Vec2D(300, 100), velocity=Vec2D(-200, -200), angularVelocity=3)
+cir = BaseGameEntity(circle, pos=Vec2D(150, 100), velocity=Vec2D(300, 100), angularVelocity=3)
+rect = BaseGameEntity(rect_vertices, pos=Vec2D(300, 100), velocity=Vec2D(0, 0), angularVelocity=3)
 
 pad_v = [Vec2D(-30, -10), Vec2D(-30, 10), Vec2D(30, 10), Vec2D(30, -10)]
-pad = BaseGameEntity(pad_v, pos=Vec2D(300, 500))
+pad = BaseGameEntity(pad_v, pos=Vec2D(0, 0))
 renderer.addEntity(cir)
 renderer.addEntity(rect)
 renderer.addEntity(pad)
@@ -43,27 +63,31 @@ renderer.addEntity(left)
 renderer.addEntity(right)
 
 entities = [rect, cir, top, bot, left, right, pad]
+
 can.pack()
 
 
-root.bind("<B1-Motion>", drag)
+root.bind("<Button-1>", click)
 
 horizontal_reflection = Vec2D(1, 0)
 vertical_reflection = Vec2D(0, 1)
 friction = .999
-
+deltaTime = .00525
 while True:
-    deltaTime = .0025
+    
     time.sleep(deltaTime)
     for e in entities:
         e.update(deltaTime)
-        
     cir.velocity *= friction
     
     m = cd.testCollisionSAT(cir, pad)
     if m:
         cir.pos += m * 5
-        cir.velocity = -cir.velocity.getReflection(vertical_reflection) * 1.1
+        if pad.velocity == Vec2D(0,0): #if the pad just stands still, pure reflection
+            cir.velocity = -cir.velocity.getReflection(vertical_reflection)
+        else: #if the pad is moving then the ball will subtract pad's velocity 
+            cir.velocity = cir.velocity + pad.velocity
+        
   
     mtv = cd.testCollisionSAT(cir, rect)
     if(mtv):
