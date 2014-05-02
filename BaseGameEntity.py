@@ -22,15 +22,24 @@ class BaseGameEntity():
             self.worldVerticesList.append(self.worldVertices[i].y)
         
     def updateWorldVertices(self):
-        for i in range(0, len(self.vertices)):
-            rotated = self.vertices[i].getRotated(self.orientation)
-            nv = rotated + self.pos
-            self.worldVertices[i] = nv
-            self.worldNormals[i] = rotated.getLeftPerpendicular().getNormalized()
+        count = len(self.vertices)
+        for i in range(0, count):
+            self.worldVertices[i] = self.vertices[i].getRotated(self.orientation)+self.pos
+        
+        prev = self.worldVertices[0]
+        self.worldNormals[0] = (prev-self.worldVertices[count-1]).getLeftPerpendicular().getNormalized()
+        for i in range(1, count):
+            curr = self.worldVertices[i]     
+            self.worldNormals[i] = (curr-prev).getLeftPerpendicular().getNormalized()
+            curr = prev
+        for i in range(0, count):
             j = 2*i
-            self.worldVerticesList[j] = nv.x
-            self.worldVerticesList[j+1] = nv.y
-    
+            v = self.worldVertices[i]
+            self.worldVerticesList[j] = v.x
+            self.worldVerticesList[j+1] = v.y
+         
+            
+        
     def update(self, deltaTime):
         self.orientation+=self.angularVelocity*deltaTime
         self.updateWorldVertices()
