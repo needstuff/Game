@@ -14,8 +14,8 @@ vert_vertices = [Vec2D(-sidewidth,-height/2), Vec2D(-sidewidth,height/2), Vec2D(
 hori_vertices = [Vec2D(-width/2 + 2*sidewidth, -5), Vec2D(-width/2+2*sidewidth, 5), Vec2D(width/2-2*sidewidth, 5), Vec2D(width/2-2*sidewidth, -5)]
 tri_vertices = [Vec2D(-10,10), Vec2D(10,10), Vec2D(0,-20)]
 rect_vertices = [Vec2D(-10,-10), Vec2D(-10,10), Vec2D(10,10), Vec2D(10,-10)]
-tri = BaseGameEntity(tri_vertices,pos=Vec2D(100,100),velocity=Vec2D(120,120), angularVelocity=-0)
-rect = BaseGameEntity(rect_vertices, pos=Vec2D(400,400), velocity=Vec2D(-120,-120), angularVelocity=0)
+tri = BaseGameEntity(tri_vertices,pos=Vec2D(100,100),velocity=Vec2D(120,120), angularVelocity=1)
+rect = BaseGameEntity(rect_vertices, pos=Vec2D(400,400), velocity=Vec2D(-190,-20), angularVelocity=.5)
 leftwall = BaseGameEntity(vert_vertices, pos=Vec2D(5,height/2), inverseMass = 0)
 rightwall = BaseGameEntity(vert_vertices, pos=Vec2D(width-5,height/2), inverseMass = 0)
 topwall = BaseGameEntity(hori_vertices, pos =Vec2D(width/2, 5), inverseMass = 0)
@@ -38,14 +38,12 @@ while True:
             e2 = entities[j]        
             mtv = cd.testCollisionSAT(e1, e2)
             if(mtv != None):    
-                e1.pos+=  mtv * e1.inverseMass * 2
-                e2.pos-=  mtv * e2.inverseMass * 2
+                e1.pos+=  mtv * e1.inverseMass * 5
+                e2.pos-=  mtv * e2.inverseMass * 5
                 dur = mtv.getNormalized()    
                     
-                e1.velocity = dur*e1.velocity.magnitude()
-                e2.velocity = -dur*e2.velocity.magnitude()
-                #e1.velocity = e1.velocity.getReflection(dur)
-                #e2.velocity = e2.velocity.getReflection(-dur)
+                e1.velocity = -e1.velocity.getReflection(dur)
+                e2.velocity = -e2.velocity.getReflection(-dur)
                         
                     
                     
