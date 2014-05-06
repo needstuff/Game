@@ -1,13 +1,14 @@
 from Vec2D import Vec2D
 
 class BaseGameEntity():
-    def __init__(self, vertices, pos = Vec2D(), velocity=Vec2D(), orientation = 0, angularVelocity = 0, mass = 1):
+    def __init__(self, vertices, pos = Vec2D(), velocity=Vec2D(), orientation = 0, angularVelocity = 0, mass = 1, inverseMass = 1):
         self.vertices = vertices
         self.pos = pos
         self.velocity = velocity
         self.orientation = orientation
         self.angularVelocity = angularVelocity
         self.mass = mass
+        self.inverseMass = inverseMass
         self.worldVertices = []
         self.worldNormals = []
         self.worldVerticesList = []

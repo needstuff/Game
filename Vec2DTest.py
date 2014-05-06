@@ -65,3 +65,12 @@ class TestVec2D(unittest.TestCase):
 		v2 = v1.getReflection(n)
 		assert(v2 == Vec2D(1,0))
 		
+		v1 = Vec2D(3,3)
+		n = Vec2D(0,-1)
+		v2= v1.getReflection(n)
+		assert(v2 == Vec2D(-3,3))
+		
+
+		
+
+		

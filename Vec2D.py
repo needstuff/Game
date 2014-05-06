@@ -114,5 +114,8 @@ class Vec2D:
 		c = unitN * self.dot(unitN)
 		return (c*2) - self
 	
+	def getDeflection(self, other):
+		unitN = other.getNormalized()
+		return self - (2 * (unitN * self.dot(unitN)))
 		
 	

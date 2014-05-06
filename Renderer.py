@@ -11,5 +11,5 @@ class Renderer():
         
     def renderAll(self):
         for entity in self.entities:
-            self.canvas.move(self.map[entity], entity.velocity.x, entity.velocity.y)
+            #self.canvas.move(self.map[entity], entity.velocity.x, entity.velocity.y)
             self.canvas.coords(self.map[entity], *entity.worldVerticesList)
