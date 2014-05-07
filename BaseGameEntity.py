@@ -43,5 +43,5 @@ class BaseGameEntity():
         
     def update(self, deltaTime):
         self.orientation+=self.angularVelocity*deltaTime
-        self.updateWorldVertices()
         self.pos+= (self.velocity*deltaTime)
+        self.updateWorldVertices()
