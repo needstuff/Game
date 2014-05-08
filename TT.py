@@ -67,19 +67,20 @@ can.pack()
 
 root.bind("<B1-Motion>", click)
 
-def solve(e1, e2):
-#     if e1.mass == e2.mass: #trivial solution v1=u1,v2=u2
-#         return (-e1.velocity.getReflection(dur), -e2.velocity.getReflection(-dur))
+def solve(e1, e2, dur):
+    if e1.mass == e2.mass: #trivial solution v1=u1,v2=u2
+        return (-e1.velocity.getReflection(dur), -e2.velocity.getReflection(-dur))
+    elif e1.mass == 0 or e2.mass == 0:
+        return (-e1.velocity.getReflection(dur), -e2.velocity.getReflection(-dur)) 
     
     totalMass = e1.mass + e2.mass
     massDiff = e1.mass - e2.mass
 
-    u2 = (e2.velocity * totalMass * totalMass - e1.velocity * 2 * e1.mass * totalMass) / (massDiff * totalMass - 2 * e2.mass)
-    u1 = (e1.velocity * totalMass - u2 * 2 * e2.mass) / (e1.mass - e2.mass)
-    print u1, u2
+    u2 = (e2.velocity * totalMass * massDiff - e1.velocity * 2 * e1.mass * totalMass) / (massDiff * (-massDiff) - 4 * e1.mass * e2.mass)
+    u1 = (e1.velocity * totalMass - u2 * 2 * e2.mass) / massDiff
+    
     return (u1, u2)
 
-solve(cir, rect)
 
 friction = .999
 deltaTime = .00525
@@ -100,9 +101,9 @@ while True:
                 e1.pos += mtv * e1.inverseMass 
                 e2.pos -= mtv * e2.inverseMass
                 dur = mtv.getNormalized()
-                #v1, v2 = solve(e1, e2, dur)
-                e1.velocity = -e1.velocity.getReflection(dur)
-                e2.velocity = -e2.velocity.getReflection(-dur) 
+                v1, v2 = solve(e1, e2, dur)
+                e1.velocity = v1.getReflection(dur) * e1.inverseMass
+                e2.velocity = v2.getReflection(-dur) * e2.inverseMass
                 
     
     renderer.renderAll()
