@@ -69,9 +69,7 @@ root.bind("<B1-Motion>", click)
 
 def solve(e1, e2, dur):
     if e1.mass == e2.mass: #trivial solution v1=u1,v2=u2
-        return (-e1.velocity.getReflection(dur), -e2.velocity.getReflection(-dur))
-    elif e1.mass == 0 or e2.mass == 0:
-        return (-e1.velocity.getReflection(dur), -e2.velocity.getReflection(-dur)) 
+        return (e1.velocity, e2.velocity)
     
     totalMass = e1.mass + e2.mass
     massDiff = e1.mass - e2.mass
