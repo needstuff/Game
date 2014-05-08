@@ -67,7 +67,7 @@ can.pack()
 
 root.bind("<B1-Motion>", click)
 
-def solve(e1, e2, dur):
+def solve(e1, e2):
     if e1.mass == e2.mass: #trivial solution v1=u1,v2=u2
         return (e1.velocity, e2.velocity)
     
@@ -99,7 +99,7 @@ while True:
                 e1.pos += mtv * e1.inverseMass 
                 e2.pos -= mtv * e2.inverseMass
                 dur = mtv.getNormalized()
-                v1, v2 = solve(e1, e2, dur)
+                v1, v2 = solve(e1, e2)
                 e1.velocity = v1.getReflection(dur) * e1.inverseMass
                 e2.velocity = v2.getReflection(-dur) * e2.inverseMass
                 
