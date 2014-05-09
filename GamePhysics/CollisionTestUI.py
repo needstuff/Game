@@ -12,15 +12,17 @@ renderer = Renderer(can)
 sidewidth = 6
 vert_vertices = [Vec2D(-sidewidth/2,-height/2), Vec2D(-sidewidth/2,height/2), Vec2D(sidewidth/2,height/2), Vec2D(sidewidth/2,-height/2)]
 hori_vertices = [Vec2D(-width/2 + 2*sidewidth, -sidewidth/2), Vec2D(-width/2+2*sidewidth, sidewidth/2), Vec2D(width/2-2*sidewidth, sidewidth/2), Vec2D(width/2-2*sidewidth, -sidewidth/2)]
-tri_vertices = [Vec2D(-10,10), Vec2D(10,10), Vec2D(0,-50)]
+tri_vertices = [Vec2D(-20,10), Vec2D(20,10), Vec2D(0,-80)]
 rect_vertices = [Vec2D(-10,-10), Vec2D(-10,10), Vec2D(10,10), Vec2D(10,-10)]
-tri = BaseGameEntity(tri_vertices,pos=Vec2D(100,100),velocity=Vec2D(120,120), angularVelocity=1)
-rect = BaseGameEntity(rect_vertices, pos=Vec2D(400,400), velocity=Vec2D(-460,-20), angularVelocity=0)
+tri = BaseGameEntity(tri_vertices,pos=Vec2D(100,100),velocity=Vec2D(120,120), angularVelocity=2)
+rect = BaseGameEntity(rect_vertices, pos=Vec2D(400,400), velocity=Vec2D(-460,-20), angularVelocity=0, orientation = .6)
 leftwall = BaseGameEntity(vert_vertices, pos=Vec2D(sidewidth,height/2), inverseMass = 0)
 rightwall = BaseGameEntity(vert_vertices, pos=Vec2D(width-sidewidth,height/2), inverseMass = 0)
 topwall = BaseGameEntity(hori_vertices, pos =Vec2D(width/2, sidewidth), inverseMass = 0)
 bottomwall = BaseGameEntity(hori_vertices, pos=Vec2D(width/2, height-sidewidth), inverseMass = 0)
 entities = [rect, tri, leftwall,rightwall,topwall, bottomwall]
+
+
 for e in entities:
     renderer.addEntity(e)
     e.update(0)
@@ -42,17 +44,12 @@ while True:
             e2 = entities[j]        
             mtv = cd.testCollisionSAT(e1, e2)
             if(mtv != None): 
-                if(e1.inverseMass != 0 and e2.inverseMass != 0):
-                    e1.pos+=mtv*.5
-                    e2.pos+=mtv*.5
-                else:     
-                    if(e1.inverseMass != 0):
-                        e1.pos+=  mtv 
-                    elif(e2.inverseMass != 0):
-                        e2.pos-=  mtv
-                    
-                e1.velocity = -e1.velocity.getReflection(mtv)
-                e2.velocity = -e2.velocity.getReflection(-mtv)
+                manifold = cd.calcCollisionManifold(e1, e2, mtv)
+                e1.pos+=mtv
+                e2.pos-=mtv
+                if(len(manifold) > 0):
+                    cd.calcImpulse(e1, e2, mtv, manifold)
+
                     
                     
     
