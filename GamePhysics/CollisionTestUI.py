@@ -13,15 +13,17 @@ sidewidth = 6
 vert_vertices = [Vec2D(-sidewidth/2,-height/2), Vec2D(-sidewidth/2,height/2), Vec2D(sidewidth/2,height/2), Vec2D(sidewidth/2,-height/2)]
 hori_vertices = [Vec2D(-width/2 + 2*sidewidth, -sidewidth/2), Vec2D(-width/2+2*sidewidth, sidewidth/2), Vec2D(width/2-2*sidewidth, sidewidth/2), Vec2D(width/2-2*sidewidth, -sidewidth/2)]
 tri_vertices = [Vec2D(-20,10), Vec2D(20,10), Vec2D(0,-80)]
-rect_vertices = [Vec2D(-10,-10), Vec2D(-10,10), Vec2D(10,10), Vec2D(10,-10)]
-tri = BaseGameEntity(tri_vertices,pos=Vec2D(200,200),velocity=Vec2D(50,50), angularVelocity=-2, inverseMass = 100, inertia = 50)
-rect = BaseGameEntity(rect_vertices, pos=Vec2D(400,400), velocity=Vec2D(-60,-60), angularVelocity=5, orientation = 0, inverseMass = 2000, inertia =10)
-rect2 = BaseGameEntity(rect_vertices, pos=Vec2D(300,300), velocity=Vec2D(60,-60), angularVelocity=5, orientation = 0, inverseMass = 2000, inertia =10)
+sqr_vertices = [Vec2D(-10,-10), Vec2D(-10,10), Vec2D(10,10), Vec2D(10,-10)]
+rect_vertices = [Vec2D(-60,-5), Vec2D(-60, 5), Vec2D(60, 5), Vec2D(60, -5)]
+tri = BaseGameEntity(tri_vertices,pos=Vec2D(200,200),velocity=Vec2D(50,50), angularVelocity=-2, inverseMass = 500, inertia = 15)
+rect = BaseGameEntity(sqr_vertices, pos=Vec2D(400,400), velocity=Vec2D(-60,-60), angularVelocity=5, orientation = 0, inverseMass = 3000, inertia =2)
+rect2 = BaseGameEntity(sqr_vertices, pos=Vec2D(300,300), velocity=Vec2D(60,-60), angularVelocity=5, orientation = 0, inverseMass = 3000, inertia =2)
+rect3 = BaseGameEntity(rect_vertices, pos=Vec2D(50,50), velocity=Vec2D(20,-60), angularVelocity=5, orientation = 0, inverseMass = 1000, inertia =10)
 leftwall = BaseGameEntity(vert_vertices, pos=Vec2D(sidewidth,height/2), inverseMass = 0,  inertia = 999999)
 rightwall = BaseGameEntity(vert_vertices, pos=Vec2D(width-sidewidth,height/2), inverseMass = 0,  inertia = 999999)
 topwall = BaseGameEntity(hori_vertices, pos =Vec2D(width/2, sidewidth), inverseMass = 0,  inertia = 999999)
 bottomwall = BaseGameEntity(hori_vertices, pos=Vec2D(width/2, height-sidewidth), inverseMass = 0, inertia = 999999)
-entities = [rect, tri, rect2, leftwall,rightwall,topwall, bottomwall]
+entities = [rect, tri, rect3, rect2, leftwall,rightwall,topwall, bottomwall]
 
 
 for e in entities:
