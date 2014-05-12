@@ -19,7 +19,7 @@ class CollisionTests():
             if(overlap < minOverlap):
                 minOverlap = overlap
                 minOverlapAxis = -norm
-                if(overlap != diff1): #enforce that returned mtv points toward e2
+                if(overlap != diff1):
                     minOverlapAxis = norm
                 
         return minOverlapAxis * minOverlap
@@ -61,15 +61,17 @@ class CollisionTests():
             ret.append(v1+inc)
         return ret  
         
-    def calcCollisionManifold(self, s1, s2, mtv):
-        n = mtv
-        #Assume mtv point to s2
+    def calcCollisionManifold(self, s1, s2, n):
         ref, inc = self.calcCollisionEdge(s1.worldVertices, s1, -n), self.calcCollisionEdge(s2.worldVertices, s2, n)
-       
+        flip = False
         vecRef, vecInc = ref[0]- ref[1], inc[0] - inc[1]
+        
+
         if abs(vecInc.dot(n)) < abs(vecRef.dot(n)):
             ref,inc = inc, ref
-            n = -n
+            flip = True
+            
+        
          
         refAxis = (ref[1] - ref[0]).getNormalized()
         offset = refAxis.dot(ref[0])
@@ -83,28 +85,43 @@ class CollisionTests():
         if(len(manifold) < 2):
             return manifold
         nNorm = refAxis.getLeftPerpendicular()
+        toS2 = s2.pos  - s1.pos
+        if(toS2.dot(nNorm) > 0):
+            nNorm = -nNorm
+        if(flip):
+            nNorm = -nNorm
         maxV = nNorm.dot(ref[0])
         ret = []
-        if(nNorm.dot(manifold[0]) - maxV >= 0):
+        d = nNorm.dot(manifold[0])
+        if( d - maxV >= 0):
             ret.append(manifold[0])
+        d = nNorm.dot(manifold[1])
         if(nNorm.dot(manifold[1]) - maxV  >= 0):
             ret.append(manifold[1])
             
         return ret
+    
+  
          
     def calcImpulse(self, s1, s2, mtv, manifold):
         e = 1
         cp = manifold[0]
         r1 = cp-s1.pos
         r2 = cp-s2.pos
-        relVel = s2.velocity-s1.velocity
+        rPerp1 = r1.getLeftPerpendicular()
+        rPerp2 = r2.getLeftPerpendicular()
+        velCP1 = rPerp1 * s1.angularVelocity
+        velCP2 = rPerp2 * s2.angularVelocity
+        relVel = (s2.velocity + velCP2) - (s1.velocity + velCP1)
         n = mtv.getNormalized()
-        s1Angular = pow((r1.getLeftPerpendicular()*s1.angularVelocity).dot(n),2)
-        s2Angular = pow((r2.getLeftPerpendicular()*s2.angularVelocity).dot(n),2)
-        denom = n.dot(n * (s1.inverseMass + s2.inverseMass)) + s1Angular + s2Angular
-        j = relVel.dot(n) * -(1+e) / denom
+        s1A = n.dot(rPerp1 * (r1.cross(n) / s1.inertia))
+        s2A = n.dot(rPerp2 * (r2.cross(n) / s2.inertia))
         
+
+        denom = (s1.inverseMass + s2.inverseMass) + s1A + s2A
+        j = (relVel.dot(n) * -(1+e)) / denom
         s1.velocity -= n * j * s1.inverseMass
         s2.velocity += n * j * s2.inverseMass
-        
+        s1.angularVelocity -= r1.cross(n*j) / s1.inertia
+        s2.angularVelocity += r2.cross(n*j) / s2.inertia
         
