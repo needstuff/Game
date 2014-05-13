@@ -1,27 +1,44 @@
 from Tkinter import *
 from math import sqrt
 import time
-from BaseGameEntity import *
-from Renderer import *
-from GamePhysics import CollisionDetection
+from RigidBody2D import *
+from UI.Renderer import Renderer
+from Core import Physics
+from RigidBody2D import RigidBody2D
+
+from Math2D import *
 
 def click(event):
 #     global oldX, oldY
     x = event.x
     y = event.y
+#   
+#   
+#     if pad.pos[0] < x:
+#         x = x + pad.pos[0]
+#     else:
+#         x = -(pad.pos[0] - x)
+#     if pad.pos[1] < y:
+#         y = y + pad.pos[1]
+#     else:
+#         y = y - pad.pos[1]
+#           
+#       
+#     pad.velocity = Vec2D(x, y)
+#       
+#     oldX = x
+#     oldY = y
+
+#     if y < 500 or y >=500:
+#         y = 500
     pad.pos = Vec2D(x, y)
     
-def hit(event):
-    pad.velocity = Vec2D(0,-500)
-    
-
-
 
 oldX = 0
 oldY = 0
 
 root = Tk()
-cd = CollisionDetection.CollisionTests()
+cd = Physics()
 width = height = 600
 can = Canvas(root, bg="white", width=width, height=height)
 renderer = Renderer(can)
@@ -31,34 +48,27 @@ circle = [Vec2D(10 * sqrt(3) / 2, 10 * .5), Vec2D(10 * sqrt(2) / 2, 10 * sqrt(2)
                  Vec2D(10 * -sqrt(3) / 2, 10 * -.5), Vec2D(10 * -sqrt(2) / 2, 10 * -sqrt(2) / 2), Vec2D(10 * -.5, 10 * -sqrt(3) / 2), Vec2D(0, -10),
                   Vec2D(10 * .5, 10 * -sqrt(3) / 2), Vec2D(10 * sqrt(2) / 2, 10 * -sqrt(2) / 2), Vec2D(10 * sqrt(3) / 2, 10 * -.5), Vec2D(10, 0)]
 rect_vertices = [Vec2D(-10, -10), Vec2D(-10, 10), Vec2D(10, 10), Vec2D(10, -10)]
-cir = BaseGameEntity(circle, pos=Vec2D(280, 400), velocity=Vec2D(0, 0), angularVelocity=3, mass=110)
-cir2 = BaseGameEntity(circle, pos=Vec2D(275, 270), velocity=Vec2D(0, 0), angularVelocity=3, mass=120)
-cir3 = BaseGameEntity(circle, pos=Vec2D(275, 270), velocity=Vec2D(0, 0), angularVelocity=3, mass=130)
-cir4 = BaseGameEntity(circle, pos=Vec2D(275, 270), velocity=Vec2D(0, 0), angularVelocity=3, mass=140)
-cir5 = BaseGameEntity(circle, pos=Vec2D(275, 270), velocity=Vec2D(0, 0), angularVelocity=3, mass=150)
-cir6 = BaseGameEntity(circle, pos=Vec2D(275, 270), velocity=Vec2D(0, 0), angularVelocity=3, mass=160)
-cir7 = BaseGameEntity(circle, pos=Vec2D(275, 270), velocity=Vec2D(0, 0), angularVelocity=3, mass=170)
-rect = BaseGameEntity(rect_vertices, pos=Vec2D(285, 100), velocity=Vec2D(210, 210), angularVelocity=3, mass=1000)
+cir = RigidBody2D(circle, pos=Vec2D(150, 100), velocity=Vec2D(450, 300), angularVelocity=3, mass=100)
+rect = RigidBody2D(rect_vertices, pos=Vec2D(300, 100), velocity=Vec2D(210, 380), angularVelocity=3, mass=1000)
 
-pad_v = [Vec2D(-10, -30), Vec2D(-10, 30), Vec2D(10, 30), Vec2D(10, -30)]
-pad = BaseGameEntity(pad_v, pos=Vec2D(0, 0), inverseMass=0, mass=300)
+pad_v = [Vec2D(-30, -10), Vec2D(-30, 10), Vec2D(30, 10), Vec2D(30, -10)]
+pad = RigidBody2D(pad_v, pos=Vec2D(0, 0), inverseMass=0)
 
-horizontal = [Vec2D(-5, -2), Vec2D(-5, 2), Vec2D(400, 2), Vec2D(400, -2)]
-vertical = [Vec2D(-2, -5), Vec2D(-2, 400), Vec2D(2, 400), Vec2D(2, -5)]
+horizontal = [Vec2D(-5, -2), Vec2D(-5, 2), Vec2D(505, 2), Vec2D(505, -2)]
+vertical = [Vec2D(-2, -5), Vec2D(-2, 505), Vec2D(2, 505), Vec2D(2, -5)]
 
-top = BaseGameEntity(horizontal, pos=Vec2D(100, 50), inverseMass=0, mass=1000000)
-bot = BaseGameEntity(horizontal, pos=Vec2D(100, 550), inverseMass=0, mass=1000000)
-left = BaseGameEntity(vertical, pos=Vec2D(50, 100), inverseMass=0 , mass=1000000)
-right = BaseGameEntity(vertical, pos=Vec2D(550, 100), inverseMass=0, mass=1000000)
+top = RigidBody2D(horizontal, pos=Vec2D(50, 50), inverseMass=0, mass=1000000)
+bot = RigidBody2D(horizontal, pos=Vec2D(50, 550), inverseMass=0, mass=1000000)
+left = RigidBody2D(vertical, pos=Vec2D(50, 50), inverseMass=0 , mass=1000000)
+right = RigidBody2D(vertical, pos=Vec2D(550, 50), inverseMass=0, mass=1000000)
 
-entities = [cir, top, bot, left, right, pad, cir2, cir3, cir4, cir5, cir6, cir7]
+entities = [rect, cir, top, bot, left, right, pad]
 for e in entities:
     renderer.addEntity(e)
     
 can.pack()
 
-root.bind("<Motion>", click)
-root.bind("<Button-1>", hit)
+root.bind("<B1-Motion>", click)
 
 def solve(e1, e2):
     if e1.mass == e2.mass: #trivial solution v1=u1,v2=u2
@@ -69,6 +79,7 @@ def solve(e1, e2):
 
     u2 = (e2.velocity * totalMass * massDiff - e1.velocity * 2 * e1.mass * totalMass) / (massDiff * (-massDiff) - 4 * e1.mass * e2.mass)
     u1 = (e1.velocity * totalMass - u2 * 2 * e2.mass) / massDiff
+    
     return (u1, u2)
 
 
@@ -78,7 +89,7 @@ while True:
     time.sleep(deltaTime)
     for e in entities:
         e.update(deltaTime)
-        e.velocity *= friction
+#     cir.velocity *= friction
 #     rect.velocity *= friction
     
     for i in range(0, len(entities)):

@@ -1,4 +1,4 @@
-class Renderer():
+class Renderer(): #Draw Rigid Body in TK
     
     def __init__(self, canvas):
         self.entities = []
@@ -11,5 +11,4 @@ class Renderer():
         
     def renderAll(self):
         for entity in self.entities:
-            #self.canvas.move(self.map[entity], entity.velocity.x, entity.velocity.y)
             self.canvas.coords(self.map[entity], *entity.worldVerticesList)
