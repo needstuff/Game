@@ -1,4 +1,4 @@
-
+import math
 class Physics:
     
     def testCollisionSAT(self, e1, e2): #Seperating Axis Theorem Test, returns minimum translation vector to separate 2d convex polygon
@@ -104,7 +104,7 @@ class Physics:
   
          
     def calcImpulse(self, s1, s2, mtv, manifold):
-        e = .7
+        e = 1
         cp = manifold[0]
         r1 = cp-s1.pos
         r2 = cp-s2.pos
@@ -125,5 +125,39 @@ class Physics:
         s1.angularVelocity -= r1.cross(n*j) / s1.inertia
         s2.angularVelocity += r2.cross(n*j) / s2.inertia
         
+    def calcImpulseFriction(self, s1, s2, mtv, manifold):
+        e = .8
+        cp = manifold[0]
+        r1 = cp-s1.pos
+        r2 = cp-s2.pos
+        rPerp1 = r1.getLeftPerpendicular()
+        rPerp2 = r2.getLeftPerpendicular()
+        velCP1 = rPerp1 * s1.angularVelocity
+        velCP2 = rPerp2 * s2.angularVelocity
+        relVel = (s2.velocity + velCP2) - (s1.velocity + velCP1)
+        n = mtv.getNormalized() 
+        s1A = n.dot(rPerp1 * (r1.cross(n) / s1.inertia))
+        s2A = n.dot(rPerp2 * (r2.cross(n) / s2.inertia))
+        denom = (s1.inverseMass + s2.inverseMass) + s1A + s2A
+        j = (relVel.dot(n) * -(1+e)) / denom
+        s1.velocity -= n * j * s1.inverseMass
+        s2.velocity += n * j * s2.inverseMass
+        s1.angularVelocity -= r1.cross(n*j) / s1.inertia
+        s2.angularVelocity += r2.cross(n*j) / s2.inertia
         
-        
+        velCP1 = rPerp1 * s1.angularVelocity
+        velCP2 = rPerp2 * s2.angularVelocity
+        relVel = (s2.velocity + velCP2) - (s1.velocity + velCP1)
+      
+        t = relVel - (n* n.dot(relVel))
+        t = t.getNormalized()
+        jt = -relVel.dot(t)
+        mu = max(s1.muS, s2.muS)
+        jt /= (s1.inverseMass + s2.inverseMass)
+        if abs(jt) < j * mu:
+            fi = t * jt
+        else:
+            mu = max(s1.muK, s2.muK)
+            fi = t * -j * mu
+        s1.velocity += fi * s1.inverseMass
+        s2.velocity -= fi * mu * s2.inverseMass
