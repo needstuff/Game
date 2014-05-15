@@ -14,7 +14,7 @@ class Entity(RigidBody2D):
         self.health-=amnt
         
 class Craft(Entity):
-    def __init__(self, vertices, pos, inverseMass, inertia, muS, muK, health):
+    def __init__(self, vertices, pos, inverseMass, inertia, muS, muK, health, color):
         self.turnRate = .4
         self.fowardThrust = 10
         self.MAX_FOWARD = 25
@@ -22,7 +22,7 @@ class Craft(Entity):
         self.heading=Vec2D(1,0)
         self.speed=0
         Entity.__init__(self, vertices=vertices, pos=pos, velocity=Vec2D(0,0),angularVelocity=0, orientation=0, inverseMass=inverseMass, inertia=inertia, 
-                             muS=muS, muK=muK, health=health)
+                             muS=muS, muK=muK, health=health, color=color)
         
     def turnLeft(self):
         self.angularVelocity-=self.turnRate
@@ -47,7 +47,7 @@ class Craft(Entity):
 width = height = 800
 root = Tk()
 cd = Physics()
-can = Canvas(root, bg="beige", width=width, height=height)
+can = Canvas(root, bg="gray", width=width, height=height)
 can.pack()
 renderer = Renderer(can)
 
@@ -87,7 +87,7 @@ def makeTarget(scale, vertices):
     v = copy.deepcopy(vertices)
     for vert in v:
         vert*=scale
-    return Entity( v, pos=Vec2D(width/2, height/2)+randVec(300), velocity=Vec2D(-2,-3), angularVelocity=5, orientation = 0, inverseMass = 2500 / scale, inertia =.05 * scale,muS = .2, muK = .01, health=50*scale)
+    return Entity( v, pos=Vec2D(width/2, height/2)+randVec(300), velocity=Vec2D(-2,-3), angularVelocity=5, orientation = 0, inverseMass = 1000 / scale, inertia =3 * scale,muS = .2, muK = .01, health=50*scale)
 
 vert_vertices = [Vec2D(-sidewidth/2,-height/2), Vec2D(-sidewidth/2,height/2), Vec2D(sidewidth/2,height/2), Vec2D(sidewidth/2,-height/2)]
 hori_vertices = [Vec2D(-width/2 + 2*sidewidth, -sidewidth/2), Vec2D(-width/2+2*sidewidth, sidewidth/2), Vec2D(width/2-2*sidewidth, sidewidth/2), Vec2D(width/2-2*sidewidth, -sidewidth/2)]
@@ -99,7 +99,7 @@ rightwall = Entity(vert_vertices, pos=Vec2D(width-sidewidth,height/2), inverseMa
 topwall = Entity(hori_vertices, pos =Vec2D(width/2, sidewidth), inverseMass = 0,  inertia = 999999)
 bottomwall = Entity(hori_vertices, pos=Vec2D(width/2, height-sidewidth), inverseMass = 0, inertia = 999999, orientation=0)
 midwall1 = Entity([v*.8 for v in hori_vertices], pos=Vec2D(width/2, height-sidewidth-300), inverseMass = 0, inertia = 999999, orientation=2)
-craft = Craft(avatar_vertices, pos = Vec2D(200,100), inverseMass=4000, inertia=.5, muS=.3, muK=.04, health = 20)
+craft = Craft(avatar_vertices, pos = Vec2D(200,100), inverseMass=4000, inertia=.5, muS=.3, muK=.04, health = 20, color='blue')
 static = [leftwall,rightwall,topwall, bottomwall, midwall1]
 targets = [makeTarget(random.uniform(.5,5), sqr_vertices) for i in range(0, 5)]
 entities = [craft]+targets
@@ -174,8 +174,8 @@ while True:
                 e2.pos-=mtv*.7
                 manifold = cd.calcCollisionManifold(e1, e2, mtv)      
                 if(len(manifold) >= 1): 
-                    cd.calcImpulseFriction(e1, e2, mtv, manifold)
                     dam=(e1.velocity-e2.velocity).magnitude()*damMult
+                    cd.calcImpulseFriction(e1, e2, mtv, manifold)
                     e1.hurt(dam)
                     e2.hurt(dam)
     for e in entities:
