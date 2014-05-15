@@ -18,6 +18,7 @@ class RigidBody2D:
         self.worldNormals = []
         self.worldVerticesList = []
         self.__initWorldVertices__()
+        self.color='black'
         
     def __initWorldVertices__(self):  
         for i in range(0, len(self.vertices)):
